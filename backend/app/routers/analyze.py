@@ -16,12 +16,11 @@ async def analyze(
     job_description: str = Form(...),
     current_user: dict = Depends(get_current_user),
 ):
-    # Validate file type
     if resume.content_type not in ["application/pdf", "application/octet-stream"]:
         raise HTTPException(status_code=400, detail="Only PDF files are accepted")
 
     file_bytes = await resume.read()
-    if len(file_bytes) > 5 * 1024 * 1024:  # 5MB limit
+    if len(file_bytes) > 5 * 1024 * 1024:
         raise HTTPException(status_code=400, detail="File too large (max 5MB)")
 
     resume_text = extract_text_from_pdf(file_bytes)
@@ -30,12 +29,11 @@ async def analyze(
 
     result = await analyze_resume(resume_text, job_description)
 
-    # Persist to MongoDB
     db = get_db()
     record = {
         "user_email": current_user["email"],
         "job_description": job_description,
-        "resume_text": resume_text[:2000],  # store truncated for history
+        "resume_text": resume_text[:2000],
         "result": result.model_dump(),
     }
     await db["analyses"].insert_one(record)

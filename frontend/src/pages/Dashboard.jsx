@@ -37,7 +37,6 @@ export default function Dashboard() {
 
   return (
     <div style={s.page}>
-      {/* Navbar */}
       <nav style={s.nav}>
         <span style={s.brand}>⚡ AI Career Coach</span>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -47,11 +46,9 @@ export default function Dashboard() {
       </nav>
 
       <div style={s.main}>
-        {/* Left: Input panel */}
         <div style={s.panel}>
           <h2 style={s.panelTitle}>Analyse your resume</h2>
 
-          {/* File drop zone */}
           <label style={s.dropzone}>
             <Upload size={28} color="var(--primary)" />
             <span style={{ fontSize: 14, color: 'var(--muted)', marginTop: 8 }}>
@@ -82,7 +79,6 @@ export default function Dashboard() {
           </button>
         </div>
 
-        {/* Right: Results panel */}
         <div style={s.panel}>
           {!result && !loading && (
             <div style={s.empty}>
@@ -104,7 +100,6 @@ export default function Dashboard() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <h2 style={s.panelTitle}>Analysis results</h2>
 
-              {/* Score */}
               <div style={{ ...s.card, textAlign: 'center' }}>
                 <div style={{ fontSize: 64, fontWeight: 700, color: scoreColor(result.fit_score), lineHeight: 1 }}>
                   {result.fit_score}
@@ -116,7 +111,6 @@ export default function Dashboard() {
                 <p style={{ fontSize: 14, marginTop: 12, color: 'var(--text)' }}>{result.summary}</p>
               </div>
 
-              {/* Skill gaps */}
               <div style={s.card}>
                 <h3 style={s.cardTitle}>Skill match</h3>
                 <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 12 }}>
@@ -143,7 +137,6 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {/* Suggestions */}
               <div style={s.card}>
                 <h3 style={s.cardTitle}>Recommendations</h3>
                 <ul style={{ paddingLeft: 18, marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -153,7 +146,6 @@ export default function Dashboard() {
                 </ul>
               </div>
 
-              {/* Interview prep CTA */}
               <button style={{ ...s.btn, background: '#1a2744' }}
                 onClick={() => navigate('/interview', { state: { topics: result.interview_topics, jd } })}>
                 <Zap size={15} /> Start interview prep →

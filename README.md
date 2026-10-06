@@ -1,114 +1,102 @@
 # AI Career Coach
 
-Full-stack AI-powered career assistant — resume analysis, skill gap detection, and real-time interview prep.
+A web app that compares a resume against a job description and then runs a mock interview over a WebSocket. You upload a PDF resume, paste a job description, and get a fit score, the skills you match and the ones you're missing, and a few suggestions. From there you can generate interview questions based on the analysis.
 
-**Stack:** Python · FastAPI · React.js (Vite) · MongoDB Atlas · Groq API · WebSocket · JWT · Docker
+Stack: Python, FastAPI, React (Vite), MongoDB Atlas, Groq API, WebSocket, JWT, Docker.
 
----
+## What it does
 
-## Features
+- Resume analysis: fit score from 0 to 100, matching and missing skills, and suggestions
+- Interview questions streamed one at a time over a WebSocket, based on the topics from the analysis
+- Register and login with JWT. The token is kept in localStorage and every protected route needs it
+- The last 10 analyses are saved in MongoDB and available through the history endpoint
 
-- **Resume analysis** — Upload a PDF resume + paste a job description → get a fit score (0–100), matching/missing skills, and improvement suggestions
-- **Real-time interview questions** — WebSocket-powered session delivers tailored questions one by one based on your analysis topics
-- **JWT auth** — Register/login with tokens stored in localStorage; all protected routes require a valid token
-- **Session history** — Last 10 analyses saved to MongoDB and queryable
+## Running locally
 
----
-
-## Local Setup
-
-### 1. Clone and set up backend
+Backend:
 
 ```bash
 cd backend
-cp .env.example .env
-# Fill in your MONGODB_URI, SECRET_KEY, and GROQ_API_KEY in .env
-
 python -m venv venv
-source venv/bin/activate         # Windows: venv\Scripts\activate
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
+```
 
+Create `backend/.env` with `MONGODB_URI`, `SECRET_KEY` and `GROQ_API_KEY` (see the table below), then:
+
+```bash
 uvicorn app.main:app --reload
 ```
 
-Backend runs at **http://localhost:8000**  
-Swagger docs at **http://localhost:8000/docs**
+The API runs on http://localhost:8000 and the Swagger docs are at http://localhost:8000/docs.
 
-### 2. Set up frontend
+Frontend:
 
 ```bash
 cd frontend
-cp .env.example .env            # defaults point to localhost:8000
+cp .env.example .env
 npm install
 npm run dev
 ```
 
-Frontend runs at **http://localhost:5173**
+The app runs on http://localhost:5173.
 
----
+## Docker
 
-## Docker (full stack)
+Create `backend/.env` first, then:
 
 ```bash
-# Create backend/.env with real values first
 docker-compose up --build
 ```
 
-- Frontend → http://localhost:80  
-- Backend  → http://localhost:8000
+The frontend is served on http://localhost:80 and the backend on http://localhost:8000.
 
----
+## Environment variables
 
-## Environment Variables
-
-### backend/.env
+`backend/.env`
 
 | Variable | Description |
 |---|---|
 | `MONGODB_URI` | MongoDB Atlas connection string |
-| `DB_NAME` | Database name (default: `ai_career_coach`) |
-| `SECRET_KEY` | Random string for JWT signing |
-| `GROQ_API_KEY` | Get from https://console.groq.com |
+| `DB_NAME` | Database name, defaults to `ai_career_coach` |
+| `SECRET_KEY` | Secret used to sign the JWTs |
+| `GROQ_API_KEY` | API key from https://console.groq.com |
 
-### frontend/.env
+`frontend/.env`
 
 | Variable | Description |
 |---|---|
 | `VITE_API_URL` | Backend HTTP URL |
 | `VITE_WS_URL` | Backend WebSocket URL (`ws://` or `wss://`) |
 
----
-
-## API Endpoints
+## API
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| POST | `/auth/register` | No | Register new user |
-| POST | `/auth/login` | No | Login and get JWT |
-| POST | `/analyze/` | Yes | Upload resume + JD → analysis |
+| POST | `/auth/register` | No | Create an account |
+| POST | `/auth/login` | No | Log in and get a JWT |
+| POST | `/analyze/` | Yes | Upload a resume and job description, get the analysis |
 | GET | `/analyze/history` | Yes | Last 10 analyses |
-| WS | `/ws/interview` | Token query param | Real-time interview questions |
+| WS | `/ws/interview` | Token in query string | Interview questions |
 | GET | `/health` | No | Health check |
 
----
-
-## Project Structure
+## Project structure
 
 ```
 ai-career-coach/
 ├── backend/
 │   ├── app/
 │   │   ├── core/          # config, database, security
-│   │   ├── models/        # Pydantic schemas
-│   │   ├── routers/       # auth, analyze, interview (WebSocket)
+│   │   ├── models/        # pydantic schemas
+│   │   ├── routers/       # auth, analyze, interview (websocket)
 │   │   └── services/      # groq_service, pdf_service, auth_service
 │   ├── requirements.txt
 │   └── Dockerfile
 ├── frontend/
 │   ├── src/
 │   │   ├── pages/         # AuthPage, Dashboard, InterviewPage
-│   │   ├── context/       # AuthContext (JWT management)
-│   │   └── services/      # axios instance with auth interceptor
+│   │   ├── context/       # AuthContext
+│   │   └── services/      # axios instance
 │   ├── Dockerfile
 │   └── nginx.conf
 └── docker-compose.yml

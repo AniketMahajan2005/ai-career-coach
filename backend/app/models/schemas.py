@@ -3,8 +3,6 @@ from typing import Optional, List
 from datetime import datetime
 
 
-# ─── Auth ────────────────────────────────────────────────────────────────────
-
 class RegisterRequest(BaseModel):
     name: str
     email: EmailStr
@@ -23,8 +21,6 @@ class TokenResponse(BaseModel):
     email: str
 
 
-# ─── Analysis ────────────────────────────────────────────────────────────────
-
 class SkillGap(BaseModel):
     missing_skills: List[str]
     matching_skills: List[str]
@@ -32,10 +28,10 @@ class SkillGap(BaseModel):
 
 
 class AnalysisResponse(BaseModel):
-    fit_score: int                  # 0–100
+    fit_score: int
     summary: str
     skill_gap: SkillGap
-    interview_topics: List[str]     # used by WebSocket interview session
+    interview_topics: List[str]
     created_at: datetime = datetime.utcnow()
 
 
@@ -47,9 +43,7 @@ class AnalysisRecord(BaseModel):
     created_at: datetime = datetime.utcnow()
 
 
-# ─── Interview ────────────────────────────────────────────────────────────────
-
 class InterviewQuestion(BaseModel):
     question: str
-    category: str       # e.g. "Technical", "Behavioural", "Role-specific"
-    difficulty: str     # "Easy" | "Medium" | "Hard"
+    category: str
+    difficulty: str

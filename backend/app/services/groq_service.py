@@ -9,8 +9,6 @@ MODEL = "openai/gpt-oss-120b"
 
 
 async def analyze_resume(resume_text: str, job_description: str) -> AnalysisResponse:
-    """Send resume + JD to Groq and parse structured response."""
-
     prompt = f"""
 You are an expert career coach and technical recruiter.
 
@@ -43,7 +41,7 @@ JOB DESCRIPTION:
 
     raw = response.choices[0].message.content.strip()
 
-    # Strip markdown code fences if present
+    # model sometimes wraps the json in fences
     raw = re.sub(r"^```(?:json)?\s*", "", raw)
     raw = re.sub(r"\s*```$", "", raw)
 
@@ -60,8 +58,6 @@ JOB DESCRIPTION:
 async def generate_interview_questions(
     topics: list[str], job_description: str
 ) -> list[InterviewQuestion]:
-    """Generate a list of interview questions based on topics from the analysis."""
-
     prompt = f"""
 You are a senior technical interviewer.
 

@@ -12,10 +12,10 @@ router = APIRouter(tags=["Interview"])
 async def interview_websocket(
     websocket: WebSocket,
     token: str = Query(...),
-    topics: str = Query(...),         # comma-separated topics
+    topics: str = Query(...),
     job_description: str = Query(...),
 ):
-    # Authenticate via token query param (WebSocket can't send headers easily)
+    # browser websockets can't set auth headers, so the token comes in the query
     email = decode_token(token)
     if not email:
         await websocket.close(code=1008, reason="Unauthorized")
@@ -26,12 +26,10 @@ async def interview_websocket(
     try:
         topic_list = [t.strip() for t in topics.split(",") if t.strip()]
 
-        # Send "generating" status
         await websocket.send_json({"type": "status", "message": "Generating interview questions..."})
 
         questions = await generate_interview_questions(topic_list, job_description)
 
-        # Stream questions one by one with a short delay (real-time effect)
         for i, q in enumerate(questions):
             await websocket.send_json({
                 "type": "question",
@@ -41,7 +39,7 @@ async def interview_websocket(
                 "category": q.category,
                 "difficulty": q.difficulty,
             })
-            await asyncio.sleep(0.6)  # stagger delivery
+            await asyncio.sleep(0.6)
 
         await websocket.send_json({"type": "done", "message": "All questions delivered"})
 

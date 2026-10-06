@@ -11,7 +11,7 @@ export default function InterviewPage() {
   const { topics = [], jd = '' } = location.state || {};
 
   const [questions, setQuestions] = useState([]);
-  const [status, setStatus] = useState('idle');   // idle | connecting | streaming | done | error
+  const [status, setStatus] = useState('idle'); // idle | connecting | streaming | done | error
   const [statusMsg, setStatusMsg] = useState('');
   const [revealed, setRevealed] = useState({});
   const wsRef = useRef(null);
@@ -80,7 +80,6 @@ export default function InterviewPage() {
           </button>
         </div>
 
-        {/* Status banner */}
         {(status === 'connecting' || status === 'streaming') && (
           <div style={s.banner}>
             <span className="pulse" style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--primary)', display: 'inline-block' }} />
@@ -94,7 +93,6 @@ export default function InterviewPage() {
           </div>
         )}
 
-        {/* Questions list */}
         <div style={s.list}>
           {questions.map((q, i) => (
             <div key={i} style={s.qCard}>
